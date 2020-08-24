@@ -350,6 +350,7 @@ export default class Canvas extends React.Component {
 									{/* canvas */}
 									<div className='center-outer'>
 										<canvas 
+											className='canvas'
 											id="canvas" 
 											width={`${width + 2*buffer}`} 
 											height={`${height + 2*buffer}`} 

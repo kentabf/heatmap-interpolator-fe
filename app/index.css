@@ -367,6 +367,9 @@ ul.about-list li{
 	list-style-type: circle;
 	padding-bottom: 3px;
 }
+.canvas{
+	border: 2px solid black;
+}
 
 .image {
 	width: 80%;
