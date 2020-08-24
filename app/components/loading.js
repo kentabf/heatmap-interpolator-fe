@@ -15,9 +15,21 @@ const styles = {
 	}
 }
 
+const stylesAdditional = {
+	content: {
+		fontSize: '12px',
+		left: '0',
+		right: '0',
+		right: '0',
+		marginTop: '20px',
+		textAlign: 'center',
+	}
+}
+
 export default class Loading extends React.Component {
 	state = {
-		content: this.props.text
+		content: this.props.text,
+		additional: this.props.text === 'interpolating'? '(The first time around, it may take a while for the server to wake up...)' : null
 	}
 
 	componentDidMount () {
@@ -37,9 +49,15 @@ export default class Loading extends React.Component {
 		return (
 			<ThemeConsumer>
 				{({ theme }) => (
-					<p style={styles.content}>
-						{this.state.content}
-					</p>
+					<React.Fragment>
+						<p style={styles.content}>
+							{this.state.content}
+						</p>
+						<p style={stylesAdditional.content}>&nbsp;</p>
+						<p style={stylesAdditional.content}>
+							<br/>{this.state.additional}
+						</p>
+					</React.Fragment>
 				)}
 			</ThemeConsumer>
 		)
