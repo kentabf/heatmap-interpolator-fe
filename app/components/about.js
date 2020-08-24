@@ -32,14 +32,10 @@ export default class About extends React.Component {
 								<br/>
 								</h3>
 								<p>
-								{this.intext()} takes a se
+								{this.intext()} interpolates then visualizes a grid-based 3 dimensional data by creating a smooth heatmap.
 								</p>
 								<p>
-								In computer science labs and office hours, sometimes there are too many students for
-								TAs to attend to. (Often when exams dates or assigment deadlines are nearing). Instead of 
-								keeping track of the queue messily on a whiteboard, {this.intext()} provides a
-								convenient and clean way to organize interactions between
-								TAs and students.
+								
 								</p>
 								<h3>
 								<br/>Example
