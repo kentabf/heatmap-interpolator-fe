@@ -54,15 +54,15 @@ export const calcColor = (value) => {
 	}
 }
 
-export const colorPixel = (width, height, i, j, imageData, color) => {
-	const idx = coordToIdx(width, height, i, j)
+export const colorPixel = (width, height, y, x, imageData, color) => {
+	const idx = coordToIdx(width, height, y, x)
 	for (let offset = 0; offset < 4; offset++) {
 		imageData.data[idx + offset] = color[offset]
 	}
 }
 
-export const colorSpot = (width, height, i, j, imageData, color) => {
-	const indices = neighborIndices(width, height, i, j)
+export const colorSpot = (width, height, y, x, imageData, color) => {
+	const indices = neighborIndices(width, height, y, x)
 	indices.forEach((idx) => {
 		for (let offset = 0; offset < 4; offset++) {
 			imageData.data[idx + offset] = color[offset]

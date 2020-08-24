@@ -2,15 +2,26 @@ import React from 'react'
 
 import { ThemeConsumer } from '../contexts/theme'
 
+export const mT = (text, sub) => {
+	return (
+		<ThemeConsumer>
+			{({ theme }) => (
+					<span className={`math math-${theme}`}>
+						&nbsp;{text}{sub && <sub>{sub}</sub>}&nbsp;
+					</span>
+			)}
+		</ThemeConsumer>
+	)
+}
+
 export default class About extends React.Component {
 
 	intext = (text) => {
 		const toRender = text? text : 'heatmap interpolator'
-		const defaultClass = text? '' : 'keyword-bold'
 		return (
 			<ThemeConsumer>
 				{({ theme }) => (
-						<span className={`keyword ${defaultClass} keyword-${theme}`}>
+						<span style={{fontWeight: 'bold'}} >
 							&nbsp;{toRender}&nbsp;
 						</span>
 				)}
@@ -28,67 +39,60 @@ export default class About extends React.Component {
 								About heatmap interpolator
 							</h1>
 							<div className='about'>
-								<h3>
-								<br/>
-								</h3>
+								<h2>
+								<br/>About
+								</h2>
 								<p>
-								{this.intext()} interpolates then visualizes a grid-based 3 dimensional data by creating a smooth heatmap.
+								{this.intext()} interpolates and visualizes a grid-based, 3 dimensional data by creating a smooth heatmap.
 								</p>
 								<p>
-								
-								</p>
-								<h3>
-								<br/>Example
-								</h3>
-								<p>
-								When looking at the how-to section below, you can follow with an example.
-								Look at `CS 000 Example Office Hours`:
-								</p>
-								<div>
-									<ul className='about-list'>
-										<li>
-											Room ID `eg_room_id`
-										</li>
-										<li>
-											TA code `eg_ta_code`
-										</li>
-										<li>
-											Student code `eg_st_code`
-										</li>
-									</ul>
-								</div>
-								<h3>
-								<br/>How-to
-								</h3>
-								<p>
-								Two types of users: TAs and students. When you create a room, you will be a TA.
+								Let there by a blank image of height {mT('h')} and width {mT('w')},
+								and a set of existing pixels <span className={`math math-${theme}`}>
+								&nbsp;&#123;p<sub>1</sub>, p<sub>2</sub>, ..., p<sub>n</sub>&#125;&nbsp;</span> where each pixel has {mT('y, x, t')}
+								values to represent the y coordinate, x coordinate, and temperature of the given pixel, respectively. (Note: top left 
+								pixel has coordinates {mT('y=0, x=0')}) This set of pixels becomes the 'data'.
 								</p>
 								<p>
-								Every room has a room ID and code - one for TAs and one for students - for joining.
+								Using the data, and a choice of an algorithm, the temperature of all remaining pixels on the image will be interpolated.
+								Based on a provided scale that maps temperature to color, each pixel in the image is then colored in. (If no scale is provided, default
+								is a red-to-violet scale for normalized temperatures between 0.0 and 1.0).
 								</p>
 								<p>
-								A TA can select a student in queue to "attend to". When done, the TA can click on
-								"complete" - with the option of keeping the student in the queue, or removing them.
+								The {this.intext('Canvas')} tool above provides a simple frontend interface with the API. However, it does not support
+								all functionalities of the API - for that, check {this.intext('Using the API')}.
 								</p>
+								<h2>
+								<br/>Algorithms
+								</h2>
 								<p>
-								A student can join a queue. Must include the topic (i.e., what topic 
-								they need help with.) The student will wait until a TA "attends" to them. There are several
-								reasons for entering the queue topic:
+								Currently, these are the algorithms supported:
 								</p>
 								<div>
 									<ul className='about-list'>
 										<li>
-											May find other student(s) that need help with the same topic. Can get together 
-											to work on it as they wait in the queue.
+											Inverse distance weighting
+											<br/>- for Canvas, power parameter is set to {mT('p=2')}
 										</li>
 										<li>
-											Another student, who is familiar with the topic, may be able to help.
+											Barnes interpolation
+											<br/>- two passes: {mT('gamma=1.0')} in first pass, {mT('gamma=0.3')} in second pass
+											<br/>- radius is set to {mT('min(width/2, height/2)')} by default
 										</li>
 										<li>
-											TA(s) may be able to see if there is a common topic many students are struggling with.
+											RBF interpolation
+											<br/>- inverse multiquadratic function is used as its RBF
+										</li>
+										<li>
+											Nearest neighbor
+										</li>
+										<li>
+											Wrapper earthmap
+											<br/>- treats the entire image as a scaled map of Earth. As such,
+											the image 'wraps' around at the edges.
 										</li>
 									</ul>
 								</div>
+				
 							</div>					
 						</div>
 					</div>

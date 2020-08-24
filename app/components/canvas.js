@@ -22,7 +22,7 @@ export default class Canvas extends React.Component {
 		buffer: 10,
 		ctx: null,
 		imageData: null,
-		i: null,
+		y: null,
 		j: null,
 		temperature: this.defaultValue,
 		imageSrc: null,
@@ -59,10 +59,10 @@ export default class Canvas extends React.Component {
 
 	handleClick = (event) => {
 		const { width, height, buffer } = this.state
-		const i = event.nativeEvent.offsetY - buffer
-		const j = event.nativeEvent.offsetX - buffer
-		if (i >= 0 && j >= 0 && i < height && j < width) {
-			this.updateColor(i, j, this.defaultValue, [0, 255, 0, 255])
+		const y = event.nativeEvent.offsetY - buffer
+		const x = event.nativeEvent.offsetX - buffer
+		if (y >= 0 && x >= 0 && y < height && x < width) {
+			this.updateColor(y, x, this.defaultValue, [0, 255, 0, 255])
 		}
 	}
 
@@ -81,9 +81,9 @@ export default class Canvas extends React.Component {
 	}
 
 	handleColorChange = (value) => {
-		const { i, j } = this.state
+		const { y, x } = this.state
 		const { temperature, color } = calcColor(value)
-		this.updateColor(i, j, temperature, color)
+		this.updateColor(y, x, temperature, color)
 	}
 
 	handleRandom = (event) => {
@@ -98,15 +98,15 @@ export default class Canvas extends React.Component {
 		const numPoints = density < 1 ? Math.floor(width * height * density) : density
 
 		for (let n = 0; n < numPoints; n++) {
-			const i = Math.floor(Math.random() * height)
-			const j = Math.floor(Math.random() * width)
+			const y = Math.floor(Math.random() * height)
+			const x = Math.floor(Math.random() * width)
 			const { temperature, color } = calcColor(Math.floor(Math.random() * 101))
 
-			colorSpot(width, height, i, j, imageData, color)
+			colorSpot(width, height, y, x, imageData, color)
 			sample.push({
 				location: {
-					i: i,
-					j: j
+					y: y,
+					x: x
 				},
 				temperature: temperature,
 			})
@@ -126,9 +126,9 @@ export default class Canvas extends React.Component {
 		if (canvas) {
 			const ctx = canvas.getContext('2d')
 			const imageData = ctx.createImageData(width, height)
-			for (let j=0; j < width; j++) {
-				for (let i=0; i < height; i++) {
-					colorPixel(width, height, i, j, imageData, backgroundColor)
+			for (let x=0; x < width; x++) {
+				for (let y=0; y < height; y++) {
+					colorPixel(width, height, y, x, imageData, backgroundColor)
 				}
 			}
 			ctx.putImageData(imageData, buffer, buffer)
@@ -139,46 +139,46 @@ export default class Canvas extends React.Component {
 		}
 	}
 
-	updateColor(i, j, temperature, color) {
+	updateColor(y, x, temperature, color) {
 		const { width, height, buffer, ctx, imageData, backgroundColor} = this.state
-		const iOld = this.state.i
-		const jOld = this.state.j
+		const yOld = this.state.y
+		const xOld = this.state.x
 
 		// un-color old spot
-		if (iOld && jOld) {
-			colorSpot(width, height, iOld, jOld, imageData, backgroundColor)
+		if (yOld && xOld) {
+			colorSpot(width, height, yOld, xOld, imageData, backgroundColor)
 		}
 
 		// color new spot
-		colorSpot(width, height, i, j, imageData, color)
+		colorSpot(width, height, y, x, imageData, color)
 
 		ctx.putImageData(imageData, buffer, buffer)
 		this.setState({
 			imageData: imageData,
-			i: i,
-			j: j,
+			y: y,
+			x: x,
 			temperature: temperature,
 			currColor: `rgba(${color[0]},${color[1]},${color[2]},${color[3]})`
 		})
 	}
 
 	adjustColor = (value) => {
-		const { i, j } = this.state
+		const { y, j } = this.state
 		const { temperature, color } = calcColor(value)
-		this.updateColor(i, j, temperature, color)
+		this.updateColor(y, j, temperature, color)
 	}
 
 	addPoint = () => {
-		const {i, j, temperature} = this.state
+		const {y, x, temperature} = this.state
 		this.state.sample.push({
 			location: {
-				i: i,
-				j: j
+				y: y,
+				x: x
 			},
 			temperature: temperature
 		})
 		this.setState({
-			i: null,
+			y: null,
 			j: null,
 			temperature: this.defaultValue
 		})
@@ -210,10 +210,16 @@ export default class Canvas extends React.Component {
 		})
 		.then((response) => {
 			if (!response.ok) {
-				response.text().then(text => this.setState({
-					error: text,
-					loading: false
-				}))
+				response.text().then(text => {
+					let errorMessage = text
+					if (response.status === 503 && text.includes('not able to produce a timely response')) {
+						errorMessage = 'There were too many data points -- server does not have enough resources to handle the computation'
+					}
+					this.setState({
+						error: errorMessage,
+						loading: false
+					})
+				})
 			} else {
 				return response.blob()
 			}
@@ -241,7 +247,7 @@ export default class Canvas extends React.Component {
 	}
 
 	render() {
-		const { width, height, buffer, imageSrc, i, j, error, loading, temperature, currColor } = this.state
+		const { width, height, buffer, imageSrc, y, x, error, loading, temperature, currColor } = this.state
 		if (loading) {
 			// interpolating
 			return (
@@ -253,7 +259,7 @@ export default class Canvas extends React.Component {
 				<ThemeConsumer>
 					{({ theme }) => (
 						<div className={`inner-container center bg-${theme}`}>
-							{this.renderRestart('Go to fresh canvas')}
+							{this.renderRestart('New canvas')}
 							{error && <ErrorMessage errorMessage={error}/>}
 							{imageSrc && <div className='center-outer'><img src={imageSrc}/></div>}
 						</div>
@@ -300,11 +306,11 @@ export default class Canvas extends React.Component {
 										<form onSubmit={this.handleRandom}>
 											or add it randomly:  
 											<select name="density" id="density">
-												<option value="5">5 pixels</option>
-												<option value="10">10 pixels</option>
-												<option value="20">20 pixels</option>
-												<option value="50">50 pixels</option>
-												<option value="100">100 pixels</option>
+												<option value="5">5 points</option>
+												<option value="10">10 points</option>
+												<option value="20">20 points</option>
+												<option value="50">50 points</option>
+												<option value="100">100 points</option>
 												<option value="0.001">0.1% of pixels</option>
 												<option value="0.01">1% of pixels</option>
 											</select>
@@ -315,7 +321,7 @@ export default class Canvas extends React.Component {
 									<div style={{height:8, width:400 }}/>
 
 									{/* slider */}
-									{i && j && 
+									{y && x && 
 										<div className='center-outer'>
 											<div style={{width: 400, fontSize: '14px'}}>
 												use slider to adjust temperature/color

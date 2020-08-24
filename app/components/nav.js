@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { FaHome, FaProjectDiagram, FaInfo} from 'react-icons/fa'
+import { FaPalette, FaProjectDiagram, FaInfo} from 'react-icons/fa'
 
 import { ThemeConsumer } from '../contexts/theme'
 
@@ -22,8 +22,8 @@ export default function Nav () {
 									activeStyle={activeStyle}
 									className='nav-link'
 								>
-									Home&nbsp;
-									<FaHome size={16} />
+									Canvas&nbsp;
+									<FaPalette size={16} />
 								</NavLink>
 							</li>
 							<li>

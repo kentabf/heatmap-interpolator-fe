@@ -1,21 +1,24 @@
 import React from 'react'
 
 import { ThemeConsumer } from '../contexts/theme'
+import { exampleJSON } from '../utils/exampleJson'
+
+export const mT = (text, sub) => {
+	return (
+		<ThemeConsumer>
+			{({ theme }) => (
+					<span className={`math math-${theme}`}>
+						&nbsp;{text}{sub && <sub>{sub}</sub>}&nbsp;
+					</span>
+			)}
+		</ThemeConsumer>
+	)
+}
 
 export default class Api extends React.Component {
 
-	taqIntext = (text) => {
-		const toRender = text? text : 'taq'
-		const defaultClass = text? '' : 'keyword-bold'
-		return (
-			<ThemeConsumer>
-				{({ theme }) => (
-						<span className={`keyword ${defaultClass} keyword-${theme}`}>
-							&nbsp;{toRender}&nbsp;
-						</span>
-				)}
-			</ThemeConsumer>
-		)
+	componentDidMount() {
+		document.getElementById("json").innerHTML = JSON.stringify(exampleJSON, undefined, 3);
 	}
 	
 	render() {
@@ -25,74 +28,39 @@ export default class Api extends React.Component {
 					<div className={`inner-container bg-${theme}`}>
 						<div className='room-panel-detail'>
 							<h1 className={`room-title room-title-${theme}`}>
-								About taq
+								About the API
 							</h1>
 							<div className='about'>
-								<h3>
-								<br/>Purpose
-								</h3>
+								<h2>
+								<br/>The API
+								</h2>
 								<p>
-								{this.taqIntext()} is a digital queue system for students and teaching assistants (TAs).
+								The API is simply a {mT('POST')} to {mT('https://heatmap-interpolator.herokuapp.com')},
+								using a JSON post body.
 								</p>
 								<p>
-								In computer science labs and office hours, sometimes there are too many students for
-								TAs to attend to. (Often when exams dates or assigment deadlines are nearing). Instead of 
-								keeping track of the queue messily on a whiteboard, {this.taqIntext()} provides a
-								convenient and clean way to organize interactions between
-								TAs and students.
+								The JSON will have the following:
 								</p>
-								<h3>
+								<div>
+									<ul className='about-list'>
+										<li>
+											required field {mT('interpolatorType')}, which must be one of {mT('idw')}, {mT('barnes')},
+											{mT('rbf')}, {mT('nn')}, or {mT('wrapper')} (corresponding to the different algorithms).
+										</li>
+										<li>
+											required field {mT('data')}, which in turn has {mT('width')}, {mT('height')}, and {mT('sample')}. 
+											See below for how to format {mT('sample')}.
+										</li>
+										<li>
+											optional field {mT('scale')}. If omitted, default scale is used (the default red-to-violet scale is
+											shown below in the example.)
+										</li>
+									</ul>
+								</div>
+								<h2>
 								<br/>Example
-								</h3>
-								<p>
-								When looking at the how-to section below, you can follow with an example.
-								Look at `CS 000 Example Office Hours`:
-								</p>
-								<div>
-									<ul className='about-list'>
-										<li>
-											Room ID `eg_room_id`
-										</li>
-										<li>
-											TA code `eg_ta_code`
-										</li>
-										<li>
-											Student code `eg_st_code`
-										</li>
-									</ul>
-								</div>
-								<h3>
-								<br/>How-to
-								</h3>
-								<p>
-								Two types of users: TAs and students. When you create a room, you will be a TA.
-								</p>
-								<p>
-								Every room has a room ID and code - one for TAs and one for students - for joining.
-								</p>
-								<p>
-								A TA can select a student in queue to "attend to". When done, the TA can click on
-								"complete" - with the option of keeping the student in the queue, or removing them.
-								</p>
-								<p>
-								A student can join a queue. Must include the topic (i.e., what topic 
-								they need help with.) The student will wait until a TA "attends" to them. There are several
-								reasons for entering the queue topic:
-								</p>
-								<div>
-									<ul className='about-list'>
-										<li>
-											May find other student(s) that need help with the same topic. Can get together 
-											to work on it as they wait in the queue.
-										</li>
-										<li>
-											Another student, who is familiar with the topic, may be able to help.
-										</li>
-										<li>
-											TA(s) may be able to see if there is a common topic many students are struggling with.
-										</li>
-									</ul>
-								</div>
+								</h2>
+								<pre id="json"></pre>
 							</div>					
 						</div>
 					</div>
@@ -103,3 +71,4 @@ export default class Api extends React.Component {
 
 
 }
+

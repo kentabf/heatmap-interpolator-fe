@@ -341,6 +341,21 @@ li {
 	color: var(--text-light);
 }
 
+.math{
+	display: inline-block;
+}
+.math-bold{
+	font-weight: bold;
+}
+.math-light{
+	background-color: var(--bg-secondary-dark);
+	color: var(--text-dark);
+}
+.math-dark{
+	background-color: var(--bg-secondary-light);
+	color: var(--text-light);
+}
+
 .about{
 	font-size: 12px;
 }
